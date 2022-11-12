@@ -17,5 +17,5 @@ bot.onText(/\/start (.+)/, function (msg, match) {
 
 bot.on('message', (msg) => {
     console.log(msg);
-    bot.sendMessage(msg.chat.id, "Message logged to console!")
+  //  bot.sendMessage(msg.chat.id, "Message logged to console!")
 })
