@@ -1,7 +1,8 @@
 {
-  "name": "starter-micro-api",
+  "name": "telegram-academicos-bot",
+  "url": "https://academicos-bot.cyclic.app",
   "version": "1.0.0",
-  "description": "Cyclic.sh micro api starter",
+  "description": "Telegram bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,5 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "node-telegram-bot-api": "^0.60.0",
+    "requests": "^0.3.0"
   }
 }
