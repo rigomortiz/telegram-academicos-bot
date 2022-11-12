@@ -11,11 +11,11 @@ bot.on("polling_error", (err) => console.log(err));
 // The 'msg' is the received Message from user and
 // 'match' is the result of execution above
 // on the text content
-bot.onText(/\/start (.+)/, function (msg, match) {
+bot.onText(/\/start/, function (msg, match) {
     bot.sendMessage(msg.chat.id, "Hey, I'm a brand new Telegram bot. I live inside a Sanity tutorial.");
 });
 
 bot.on('message', (msg) => {
     console.log(msg);
-    bot.sendMessage(msg.chat.id, "Message logged to console!")
+  //   bot.sendMessage(msg.chat.id, "Message logged to console!")
 })
