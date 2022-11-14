@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 
 
 app.listen(PORT, async () => {
-    // setting up our webhook url on server spinup
+    // setting up our webhook url on server start
     try {
         console.log(`Server is up and Running at PORT : ${PORT}`)
         await setupWebhook()
@@ -80,7 +80,7 @@ app.post(URI,  async (req, res) => {
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: message.chat.id,
                 text: `Para ingresar al grupo es necesario que cuentes con correo @ciencias.
-                \n1. Llena el siguiente formulario ${GOOGLE_FORMS + MD5 + ',' + message.from.id + ',' + username}
+                \n1. Llena el siguiente formulario ${GOOGLE_FORMS + message.from.id + ',' + message.chat.id + ',' + username}
                 \n2. Espera el correo de confirmación y el link por este chat.
                 \n3. Si tienes problemas para ingresar envía un mensaje a @rigomortiz.`
             })
