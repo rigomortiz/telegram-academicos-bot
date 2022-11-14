@@ -1,0 +1,26 @@
+GET {{LOCALHOST}}
+
+
+###
+POST {{LOCALHOST}}/webhook/{{TOKEN}}
+Content-Type: application/json
+
+{
+ "body": {
+  "message": {
+   "chat": {
+    "id": {{CHAT_ID}}
+   },
+   "text": "Hello"
+  }
+ }
+}
+
+###
+POST https://api.telegram.org/bot{{TOKEN}}/sendChatAction
+Content-Type: application/json
+
+{
+ "chat_id": {{CHAT_ID}},
+ "action": "typing"
+}
