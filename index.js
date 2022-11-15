@@ -46,6 +46,10 @@ app.listen(PORT, async () => {
 app.post(URI,  async (req, res) => {
     try {
         const {message} = req.body
+
+        if (message.chat.type !== 'private')
+            return res.status(200).send('ok')
+
         const username = message.from.username || ''
 
         // console.log(`message:`, message)
