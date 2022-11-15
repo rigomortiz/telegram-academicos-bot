@@ -3,7 +3,7 @@ const express = require('express')
 const axios = require('axios')
 const crypto = require("crypto")
 
-const { PORT, API_KEY, SERVER_URL, SECRET_MD5, GOOGLE_FORMS } = process.env
+const { PORT, API_KEY, SERVER_URL, SECRET_MD5, GOOGLE_FORMS, GROUP_TELEGRAM_LINK } = process.env
 
 // app initialization
 const app = express()
@@ -64,7 +64,9 @@ app.post(URI,  async (req, res) => {
             // Send message
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: message.chat.id,
-                text: `¡Hola ${username}!\nPara ingresar al grupo escribe:\n /ingresar`
+                text: `¡Hola ${username}!
+                \n1. Para ingresar al grupo escribe:\n /ingresar
+                \n2. Para validar que cuentas con un correo ciencias.unam.mx escribe:\n /validar`
             })
         } else if(message.text === '/ingresar') {
             // Typing chat action
@@ -73,16 +75,38 @@ app.post(URI,  async (req, res) => {
                 action: 'typing'
             })
             // MD5 Hash
-            const MD5 = crypto.createHmac("md5", SECRET_MD5).update(message.from.id.toString()).digest("hex")
+            //const MD5 = crypto.createHmac("md5", SECRET_MD5).update(message.from.id.toString()).digest("hex")
             // Sleep for 2 seconds
             await new Promise(resolve => setTimeout(resolve, 2000))
             // Send message
             await axios.post(`${TELEGRAM_API}/sendMessage`, {
                 chat_id: message.chat.id,
-                text: `Para ingresar al grupo es necesario que cuentes con correo @ciencias.
-                \n1. Llena el siguiente formulario ${GOOGLE_FORMS + message.from.id + ',' + message.chat.id + ',' + username}
-                \n2. Espera el correo de confirmación y el link por este chat.
-                \n3. Si tienes problemas para ingresar envía un mensaje a @rigomortiz.`
+                text: `Para ingresar al grupo es necesario que cuentes con correo ciencias.unam.mx
+                \n1. Ingresa al siguiente link del grupo de telegram: ${GROUP_TELEGRAM_LINK}
+                \n2. Llena el siguiente formulario: ${GOOGLE_FORMS + message.from.id}
+                \n3. Al finalizar el formulario, espera a que el bot apruebe tu solicitud.
+                \n4. Si no te aprueban, es porque no cuentas con correo @ciencias, por lo que no puedes ingresar al grupo.
+                \n
+                \nSi tienes problemas para ingresar envía un mensaje a @rigomortiz.`
+            })
+        }  else if(message.text === '/validar') {
+            // Typing chat action
+            await axios.post(`${TELEGRAM_API}/sendChatAction`, {
+                chat_id: message.chat.id,
+                action: 'typing'
+            })
+            // MD5 Hash
+            //const MD5 = crypto.createHmac("md5", SECRET_MD5).update(message.from.id.toString()).digest("hex")
+            // Sleep for 2 seconds
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            // Send message
+            await axios.post(`${TELEGRAM_API}/sendMessage`, {
+                chat_id: message.chat.id,
+                text: `Para validar tu usuario es necesario que cuentes con correo ciencias.unam.mx
+                \n1. Llena el siguiente formulario: ${GOOGLE_FORMS + message.from.id}
+                \n2. Al finalizar el formulario, espera a que el bot valide tu correo.
+                \n
+                \nSi tienes problemas para validar envía un mensaje a @rigomortiz.`
             })
         }
 

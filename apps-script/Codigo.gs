@@ -1,31 +1,45 @@
 function onFormSubmite(e) {
-  try {
-    var data = e.response.getItemResponses()[0].getResponse().split(',');
-    var user_id = data[0]
-    var chat_id = data[1]
-    var username = data[2];
-    var name = e.response.getItemResponses()[1].getResponse();
-    var email = e.response.getRespondentEmail();
-    const scriptProperties = PropertiesService.getScriptProperties();
+  const user_id = e.response.getItemResponses()[0].getResponse();
+  const name = e.response.getItemResponses()[1].getResponse();
+  const email = e.response.getRespondentEmail();
+  const scriptProperties = PropertiesService.getScriptProperties();
 
-    var LINK = scriptProperties.getProperty('GROUP_TELEGRAM_LINK');
-    var NOTIFICATION_CHAT_ID = scriptProperties.getProperty('NOTIFICATION_CHAT_ID');
-    var API_KEY = scriptProperties.getProperty('API_KEY');
+  const NOTIFICATION_CHAT_ID = scriptProperties.getProperty('NOTIFICATION_CHAT_ID');
+  const API_KEY = scriptProperties.getProperty('API_KEY');
+  const CHAT_ID = scriptProperties.getProperty('CHAT_ID');
+  const API_URL = scriptProperties.getProperty('API_URL');
 
-    var html = "Hola " + name + ", se validó tu correo.\n"
-      + "Código de validación:\n" + user_id + "\n"
-      + "Link del grupo:\n" + LINK + "\n"
-      + "\nPor favor no compartas el link.";
+  const params = {
+    method: "POST",
+    contentType: "application/json",
+    muteHttpExceptions: true
+  };
 
+  const html =
+    `Hola ${name}
+  \nBinvenid@ al grupo de Telegram Asamblea de académicas y académicos FC.
+  \nCódigo de validación: ${user_id}
+  \nSaludos.`;
 
-    GmailApp.sendEmail(email, 'Validación de usuario de Telegram', html, {noReply: true});
-    UrlFetchApp.fetch('https://api.telegram.org/bot' + API_KEY + '/sendMessage?chat_id=-' + NOTIFICATION_CHAT_ID + '&text='
-      + encodeURIComponent(email + '\n' + name + '\n' + username + '\n' + user_id));
+  const valid_email_msg =
+    `Hola ${name}
+  \nTu usuario ha sido validado correctamente.
+  \nCódigo de validación: ${user_id}
+  \nSaludos.`;
 
-    UrlFetchApp.fetch('https://api.telegram.org/bot' + API_KEY + '/sendMessage?chat_id=' + chat_id + '&text='
-      + encodeURIComponent(html));
-  } catch (err) {
-    // TODO (developer) - Handle exception
-    Logger.log('Failed with error %s', err.message);
+  const text = encodeURIComponent(email + '\n' + name + '\n' + user_id)
+
+  // Send email
+  GmailApp.sendEmail(email, 'Validación de usuario de Telegram', html, {noReply: true});
+  // Approve join
+  var r = UrlFetchApp.fetch(`${API_URL}/bot${API_KEY}/approveChatJoinRequest?chat_id=${CHAT_ID}&user_id=${user_id}`, params);
+  if (r.getResponseCode() == 200) {
+    // Send message of approve
+    UrlFetchApp.fetch(`${API_URL}/bot${API_KEY}/sendMessage?chat_id=${user_id}&text=${encodeURIComponent(html)}`, params);
+  } else if(r.getResponseCode() == 400) {
+    UrlFetchApp.fetch(`${API_URL}/bot${API_KEY}/sendMessage?chat_id=${user_id}&text=${encodeURIComponent(valid_email_msg)}`, params);
   }
+
+  // Send notification message
+  UrlFetchApp.fetch(`${API_URL}/bot${API_KEY}/sendMessage?chat_id=${NOTIFICATION_CHAT_ID}&text=${text}`, params);
 }
